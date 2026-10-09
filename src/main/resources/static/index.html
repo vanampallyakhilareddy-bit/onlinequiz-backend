@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Quiz Application</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef2ff;
+            text-align: center;
+            padding: 30px;
+        }
+        .container {
+            background: white;
+            max-width: 600px;
+            margin: auto;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px #cccccc;
+        }
+        h1 { color: #4338ca; }
+        #question { font-size: 21px; margin: 25px 0; }
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            background: #4f46e5;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover { background: #3730a3; }
+        #message { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Online Quiz Application</h1>
+        <p>Test your Java knowledge!</p>
+        <p id="progress"></p>
+        <h2 id="question">Loading questions...</h2>
+        <div id="options"></div>
+        <p id="message"></p>
+        <button id="next" onclick="nextQuestion()" hidden>
+            Next Question
+        </button>
+        <h3 id="score"></h3>
+    </div>
+    <script>
+        let questions = [];
+        let current = 0;
+        let points = 0;
+        let answered = false;
+        async function loadQuiz() {
+            try {
+                const response = await fetch('/api/quiz');
+                if (!response.ok) throw new Error('Could not load questions');
+                questions = await response.json();
+                showQuestion();
+            } catch (error) {
+                document.getElementById('question').textContent =
+                    'Unable to load quiz. Please refresh the page.';
+            }
+        }
+        function showQuestion() {
+            answered = false;
+            document.getElementById('message').textContent = '';
+            document.getElementById('score').textContent = '';
+            document.getElementById('next').hidden = true;
+            document.getElementById('progress').textContent =
+                'Question ' + (current + 1) + ' of ' + questions.length;
+            document.getElementById('question').textContent =
+                questions[current].question;
+            const area = document.getElementById('options');
+            area.innerHTML = '';
+            for (let i = 1; i <= 4; i++) {
+                const key = 'option' + i;
+                if (!questions[current][key]) continue;
+                const button = document.createElement('button');
+                button.textContent = questions[current][key];
+                button.onclick = () => checkAnswer(questions[current][key]);
+                area.appendChild(button);
+            }
+        }
+        function checkAnswer(choice) {
+            if (answered) return;
+            answered = true;
+            const correct = questions[current].answer;
+            if (choice === correct) {
+                points++;
+                document.getElementById('message').textContent = 'Correct!';
+            } else {
+                document.getElementById('message').textContent =
+                    'Incorrect. Correct answer: ' + correct;
+            }
+            document.getElementById('next').hidden = false;
+        }
+        function nextQuestion() {
+            current++;
+            if (current < questions.length) {
+                showQuestion();
+            } else {
+                document.getElementById('question').textContent =
+                    'Quiz Completed!';
+                document.getElementById('options').innerHTML = '';
+                document.getElementById('progress').textContent = '';
+                document.getElementById('message').textContent =
+                    'Your final score:';
+                document.getElementById('score').textContent =
+                    points + ' / ' + questions.length;
+                document.getElementById('next').hidden = true;
+            }
+        }
+        loadQuiz();
+    </script>
+</body>
+</html>
