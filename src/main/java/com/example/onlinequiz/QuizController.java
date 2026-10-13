@@ -1,13 +1,12 @@
 package com.example.onlinequiz;
-
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
-
+@CrossOrigin(origins = "https://vanampallyakhilareddy-bit.github.io")
 @RestController
 public class QuizController {
-
     @GetMapping("/api/quiz")
     public List<Map<String, String>> getQuestions() {
         return List.of(
