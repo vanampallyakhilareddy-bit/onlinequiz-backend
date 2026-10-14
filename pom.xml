@@ -49,11 +49,17 @@
         </plugins>
     </build>
          
-<dependency>
-    <groupId>org.postgresql</groupId>
-    <artifactId>postgresql</artifactId>
-    <scope>runtime</scope>
-</dependency>
+
+<dependencies>
+    <!-- Keep your existing dependencies here -->
+
+    <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <scope>runtime</scope>
+    </dependency>
+</dependencies>
+
 
 
 </project>
